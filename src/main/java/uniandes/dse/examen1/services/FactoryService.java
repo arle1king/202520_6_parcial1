@@ -17,6 +17,9 @@ public class FactoryService {
 
     public FactoryEntity createFactory(FactoryEntity newFactory) throws RepeatedFactoryException {
         // TODO
-        return null;
+		if(factoryRepository.existsByName(newFactory.getName())) {
+			throw new RepeatedFactoryException(newFactory.getName());
+		}
+		return factoryRepository.save(newFactory);
     }
 }

@@ -1,1 +1,2 @@
 # ISIS2603_202520_6_parcial1
+# Yerson_Saul_Idrobo_Duarte

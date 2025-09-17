@@ -25,7 +25,27 @@ public class ContractService {
 
     public ContractEntity createContract(String factoryName, String supplierCode, Double contractValue)
             throws InvalidContractException {
-        // TODO
-        return null;
+
+        if(!factoryRepository.existsByName(factoryName)) {
+            throw new InvalidContractException("Factory no existe: " + factoryName);
+        }
+        if(!supplierRepository.existsByCode(supplierCode)) {
+            throw new InvalidContractException("Supplier no existe: " + supplierCode);
+        }
+        if(contractValue == null || contractValue <= 0) {
+            throw new InvalidContractException("Contract no es valido: " + contractValue);
+        }
+
+        var factoryEntity = factoryRepository.findByName(factoryName).get();
+        var supplierEntity = supplierRepository.findBySupplierCode(supplierCode).get();
+
+        ContractEntity contract = new ContractEntity();
+        contract.setFactory(factoryEntity);
+        contract.setProvider(supplierEntity);
+        contract.setContractValue(contractValue);
+        contract.setActive(true);
+        contract.setSatisfaction(0);
+
+        return contractRepository.save(contract);
     }
 }

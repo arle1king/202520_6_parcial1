@@ -10,4 +10,5 @@ import uniandes.dse.examen1.entities.FactoryEntity;
 @Repository
 public interface FactoryRepository extends JpaRepository<FactoryEntity, Long> {
     Optional<FactoryEntity> findByName(String name);
+    boolean existsByName(String name);
 }

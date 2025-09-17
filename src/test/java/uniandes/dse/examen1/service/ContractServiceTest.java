@@ -1,6 +1,10 @@
 package uniandes.dse.examen1.service;
-
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows; 
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import jakarta.transaction.Transactional;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
+import uniandes.dse.examen1.entities.ContractEntity;
 import uniandes.dse.examen1.entities.SupplierEntity;
 import uniandes.dse.examen1.entities.FactoryEntity;
 import uniandes.dse.examen1.exceptions.RepeatedSupplierException;
@@ -71,7 +76,18 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateContract() {
-        // TODO
+        try {
+            ContractEntity contract = contractService.createContract(name, supplierCode, 1000.0);
+            assertNotNull(contract);
+            assertNotNull(contract.getId());
+            assertEquals(1000.0, contract.getContractValue());
+            assertTrue(contract.getActive());
+            assertEquals(0, contract.getSatisfaction());
+            assertEquals(name, contract.getFactory().getName());
+            assertEquals(supplierCode, contract.getProvider().getSupplierCode());
+        } catch (InvalidContractException e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
     }
 
     /**
@@ -80,7 +96,25 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateMultipleContract() {
-        // TODO
+        try {
+            ContractEntity contract1 = contractService.createContract(name, supplierCode, 1000.0);
+            ContractEntity contract2 = contractService.createContract(name, supplierCode, 2000.0);
+            
+            assertNotNull(contract1);
+            assertNotNull(contract2);
+            assertNotNull(contract1.getId());
+            assertNotNull(contract2.getId());
+            
+            assertEquals(1000.0, contract1.getContractValue());
+            assertEquals(2000.0, contract2.getContractValue());
+            
+            assertEquals(name, contract1.getFactory().getName());
+            assertEquals(name, contract2.getFactory().getName());
+            assertEquals(supplierCode, contract1.getProvider().getSupplierCode());
+            assertEquals(supplierCode, contract2.getProvider().getSupplierCode());
+        } catch (InvalidContractException e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
     }
 
     /**
@@ -104,7 +138,9 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateContractMissingSupplier() {
-        // TODO
+        assertThrows(InvalidContractException.class, () -> {
+            contractService.createContract(name, "NONEXISTENT_SUPPLIER", 1000.0);
+        });
     }
 
     /**
@@ -113,7 +149,9 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateContractMissingFactory() {
-        // TODO
+        assertThrows(InvalidContractException.class, () -> {
+            contractService.createContract("NONEXISTENT_FACTORY", supplierCode, 1000.0);
+        });
     }
 
     /**
@@ -122,7 +160,15 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateContractWrongValue() {
-        // TODO
+        assertThrows(InvalidContractException.class, () -> {
+            contractService.createContract(name, supplierCode, -100.0);
+        });
+        assertThrows(InvalidContractException.class, () -> {
+            contractService.createContract(name, supplierCode, 0.0);
+        });
+        assertThrows(InvalidContractException.class, () -> {
+            contractService.createContract(name, supplierCode, null);
+        });
     }
 
     /**
@@ -131,7 +177,26 @@ public class ContractServiceTest {
      */
     @Test
     void testCreateContractCapacityExceeded() {
-        // TODO
+        try {
+            SupplierEntity supplier = supplierRepository.findBySupplierCode(supplierCode).get();
+            int capacity = supplier.getCapacity();
+            
+            if (capacity > 0) {
+                for (int i = 0; i < capacity; i++) {
+                    contractService.createContract(name, supplierCode, 1000.0);
+                }
+                assertThrows(InvalidContractException.class, () -> {
+                    contractService.createContract(name, supplierCode, 1000.0);
+                });
+            } else {
+                for (int i = 0; i < 10; i++) {
+                    ContractEntity contract = contractService.createContract(name, supplierCode, 1000.0);
+                    assertNotNull(contract);
+                }
+            }
+        } catch (InvalidContractException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
     }
 
 }

@@ -22,21 +22,42 @@ public class MetricsService {
     ContractRepository contractRepository;
 
     public Double calculateTotalContractValue(String factoryName) {
-        // TODO Calculate the total value of all contracts associated with the given
-        // factory
-        return 0.0;
+        log.info("Calculating total contract value for factory: {}", factoryName);
+        
+        // Validate factory exists
+        if (!factoryRepository.existsByName(factoryName)) {
+            log.warn("Factory not found: {}", factoryName);
+            return 0.0;
+        }
+
+        Double totalValue = contractRepository.sumContractValueByFactoryName(factoryName);
+        return totalValue != null ? totalValue : 0.0;
     }
 
     public Double calculateSupplierSatisfactionAverage(String supplierCode) {
-        // TODO Calculate the average satisfaction of all contracts associated with the
-        // given supplier
-        return 0.0;
+        log.info("Calculating average satisfaction for supplier: {}", supplierCode);
+        
+        // Validate supplier exists
+        if (!supplierRepository.existsByCode(supplierCode)) {
+            log.warn("Supplier not found: {}", supplierCode);
+            return 0.0;
+        }
+        
+        Double avgSatisfaction = contractRepository.avgSatisfactionBySupplierCode(supplierCode);
+        return avgSatisfaction != null ? avgSatisfaction : 0.0;
     }
 
     public Double calculateContractAverageValue(String supplierCode) {
-        // TODO Calculate the average value of all contracts associated with the given
-        // supplier
-        return 0.0;
+        log.info("Calculating average contract value for supplier: {}", supplierCode);
+        
+        // Validate supplier exists
+        if (!supplierRepository.existsByCode(supplierCode)) {
+            log.warn("Supplier not found: {}", supplierCode);
+            return 0.0;
+        }
+        
+        Double avgValue = contractRepository.avgContractValueBySupplierCode(supplierCode);
+        return avgValue != null ? avgValue : 0.0;
     }
 
 }

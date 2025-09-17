@@ -10,4 +10,5 @@ import uniandes.dse.examen1.entities.SupplierEntity;
 @Repository
 public interface SupplierRepository extends JpaRepository<SupplierEntity, Long> {
     Optional<SupplierEntity> findBySupplierCode(String supplierCode);
+    boolean existsByCode (String code);
 }

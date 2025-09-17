@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import uk.co.jemos.podam.common.PodamExclude;
 
@@ -35,4 +36,11 @@ public class ContractEntity {
 
     // TODO
 
+    @PodamExclude
+    @ManyToOne
+    private FactoryEntity factory;
+
+    @PodamExclude
+    @ManyToOne
+    private SupplierEntity provider;
 }

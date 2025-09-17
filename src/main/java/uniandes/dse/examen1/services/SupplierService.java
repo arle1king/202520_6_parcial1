@@ -17,6 +17,9 @@ public class SupplierService {
 
     public SupplierEntity createSupplier(SupplierEntity newSupplier) throws RepeatedSupplierException {
         // TODO
-        return null;
+        if(supplierRepository.existsByCode(newSupplier.getSupplierCode())) {
+			throw new RepeatedSupplierException(newSupplier.getSupplierCode());
+		}
+		return supplierRepository.save(newSupplier);
     }
 }

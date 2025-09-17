@@ -1,9 +1,14 @@
 package uniandes.dse.examen1.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import uk.co.jemos.podam.common.PodamExclude;
 
@@ -33,4 +38,12 @@ public class SupplierEntity {
     private Integer capacity;
 
     // TODO
+
+    @PodamExclude
+    @ManyToMany
+    private List<FactoryEntity> suppliers = new ArrayList<>();
+
+    @PodamExclude
+    @OneToMany(mappedBy = "provider")
+    private List<ContractEntity> reflexiones = new ArrayList<ContractEntity>();
 }
