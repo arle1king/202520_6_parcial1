@@ -1,5 +1,7 @@
 package uniandes.dse.examen1.service;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 import uniandes.dse.examen1.entities.SupplierEntity;
 import uniandes.dse.examen1.entities.FactoryEntity;
 import uniandes.dse.examen1.exceptions.RepeatedSupplierException;
+import uniandes.dse.examen1.exceptions.InvalidContractException;
 import uniandes.dse.examen1.exceptions.RepeatedFactoryException;
 import uniandes.dse.examen1.repositories.SupplierRepository;
 import uniandes.dse.examen1.repositories.FactoryRepository;
@@ -43,12 +46,18 @@ public class ContractServiceTest {
 
     private String name;
     private String supplierCode;
+    private String unlimitedSupplierCode;
 
     @BeforeEach
     void setUp() throws RepeatedSupplierException, RepeatedFactoryException {
         SupplierEntity newSupplier = factory.manufacturePojo(SupplierEntity.class);
         newSupplier = supplierService.createSupplier(newSupplier);
         supplierCode = newSupplier.getSupplierCode();
+
+        SupplierEntity unlimitedSupplier = factory.manufacturePojo(SupplierEntity.class);
+        unlimitedSupplier.setCapacity(-1);
+        unlimitedSupplier = supplierService.createSupplier(unlimitedSupplier);
+        unlimitedSupplierCode = unlimitedSupplier.getSupplierCode();
 
         FactoryEntity newFactory = factory.manufacturePojo(FactoryEntity.class);
         newFactory = factoryService.createFactory(newFactory);
@@ -72,6 +81,22 @@ public class ContractServiceTest {
     @Test
     void testCreateMultipleContract() {
         // TODO
+    }
+
+    /**
+     * Tests the creation of many contracts for a factory with the same
+     * existing supplier with unlimited capacity
+     */
+    @Test
+    void testCreateContractWithUnlimitedCapacity() {
+        try {
+            int numberOfContracts = 50;
+            for (int i = 0; i < numberOfContracts; i++) {
+                contractService.createContract(name, unlimitedSupplierCode, 1000.0);
+            }
+        } catch (InvalidContractException e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
     }
 
     /**
