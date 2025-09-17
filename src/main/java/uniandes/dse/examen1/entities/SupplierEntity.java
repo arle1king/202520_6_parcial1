@@ -27,8 +27,7 @@ public class SupplierEntity {
     private String name;
 
     /**
-     * The maximum number of contracts that the supplier can handle. If the number
-     * is -1, it means that there is no limit.
+     * The maximum number of contracts that the supplier can handle.
      */
     private Integer capacity;
 
